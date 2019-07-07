@@ -18,7 +18,7 @@ import java.sql.Statement;
  */
 public class Register extends Application {
     public TextField tfName;
-    public TextField tfNick;
+    public TextField tfUsername;
     public TextField tfEmail;
     public PasswordField pfPass1;
     public PasswordField pfPass2;
@@ -49,15 +49,15 @@ public class Register extends Application {
                     Statement stmt = con.createStatement()
             ) {
                 String getName = tfName.getText();
-                String getNick = tfNick.getText();
+                String getNick = tfUsername.getText();
                 String getEmail = tfEmail.getText();
                 String getPassword = BCrypt.hashpw(pfPass1.getText(), BCrypt.gensalt(12));
-                stmt.executeUpdate("INSERT INTO Users(Name, Nick, Email, Password) " + "VALUES ('" + getName +
+                stmt.executeUpdate("INSERT INTO Users(Name, Username, Email, Password) " + "VALUES ('" + getName +
                         "', '" + getNick + "', '" + getEmail + "', '" + getPassword + "')");
 
             }
             tfName.clear();
-            tfNick.clear();
+            tfUsername.clear();
             tfEmail.clear();
             pfPass1.clear();
             pfPass2.clear();
@@ -65,15 +65,15 @@ public class Register extends Application {
     }
 
     public boolean VerifyInformation(){
-        if (tfName.getText().isEmpty() || tfNick.getText().isEmpty() || tfEmail.getText().isEmpty() ||
+        if (tfName.getText().isEmpty() || tfUsername.getText().isEmpty() || tfEmail.getText().isEmpty() ||
                 pfPass1.getText().isEmpty() || pfPass2.getText().isEmpty()){
             alertWarning("Empty field.", "Please ensure all fields are filled in.");
             return false;
         } else if (!tfName.getText().matches("^[\\p{L} .'-]+$")){
             alertWarning("Invalid name", "Please enter a full, valid name.");
             return false;
-        } else if (!tfNick.getText().matches("^[\\p{L} .'-]+$")){
-            alertWarning("Invalid nickname", "Please enter a valid nickname.");
+        } else if (!tfUsername.getText().matches("^[\\p{L} .'-]+$")){
+            alertWarning("Invalid username", "Please enter a valid username.");
             return false;
         } else if (!validateEmailAddress(tfEmail.getText())){
             alertWarning("Invalid e-mail", "Please enter a valid e-mail address.");
