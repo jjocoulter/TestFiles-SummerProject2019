@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<SplitPane dividerPositions="0.29797979797979796" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" fx:controller="RegistrationSystem.Register" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1">
+  <items>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+         <children>
+            <Label text="Name" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
+               <font>
+                  <Font size="18.0" />
+               </font>
+               <padding>
+                  <Insets right="5.0" />
+               </padding>
+            </Label>
+            <Label text="Nickname" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="130.0">
+                <font>
+                    <Font size="18.0" />
+                </font>
+                <padding>
+                    <Insets right="5.0" />
+                </padding>
+            </Label>
+            <Label text="Email" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="160.0">
+                <font>
+                    <Font size="18.0" />
+                </font>
+                <padding>
+                    <Insets right="5.0" />
+                </padding>
+            </Label>
+            <Label text="Password" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="190.0">
+                <font>
+                    <Font size="18.0" />
+                </font>
+                <padding>
+                    <Insets right="5.0" />
+                </padding>
+            </Label>
+            <Label text="Re-enter password" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="220.0">
+                <font>
+                    <Font size="18.0" />
+                </font>
+                <padding>
+                    <Insets right="5.0" />
+                </padding>
+            </Label>
+         </children></AnchorPane>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+         <children>
+            <Label text="Register" textAlignment="CENTER" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0">
+               <font>
+                  <Font size="31.0" />
+               </font>
+               <padding>
+                  <Insets top="10.0" />
+               </padding>
+            </Label>
+            <TextField fx:id="tfName" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="100.0" />
+            <TextField fx:id="tfNick" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="130.0" />
+            <TextField fx:id="tfEmail" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="160.0" />
+            <PasswordField fx:id="pfPass1" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="190.0" />
+            <PasswordField fx:id="pfPass2" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="220.0" />
+            <Button fx:id="btnRegister" mnemonicParsing="false" onAction="#Register" text="Register" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="300.0">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </Button>
+         </children></AnchorPane>
+  </items>
+</SplitPane>
