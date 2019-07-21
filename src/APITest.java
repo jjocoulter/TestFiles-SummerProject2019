@@ -22,7 +22,7 @@ public class APITest {
 
         post.setHeader("user-key", "ba566df70dd39c35dc2edeea0cbd7838");
         //the search queries
-        post.setEntity(new StringEntity("fields name, genres.name; where id = 1942;"));
+        post.setEntity(new StringEntity("fields *; where id = 1942;"));
 
         //get the response and check the response code. 200 is a successful response.
         HttpResponse response = client.execute(post);

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GameRequests.GameRequests">
+   <children>
+      <AnchorPane fx:id="paneInitial" prefHeight="400.0" prefWidth="600.0">
+         <children>
+            <Button fx:id="btnMakeRequest" mnemonicParsing="false" onAction="#MakeRequest" text="Make Request" AnchorPane.leftAnchor="180.0" AnchorPane.topAnchor="70.0">
+               <font>
+                  <Font size="25.0" />
+               </font>
+            </Button>
+            <Button fx:id="btnShowRequests" mnemonicParsing="false" onAction="#ShowRequests" text="Show Requests" AnchorPane.leftAnchor="175.0" AnchorPane.topAnchor="200.0">
+               <font>
+                  <Font size="25.0" />
+               </font></Button>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="paneMakeRequest" prefHeight="400.0" prefWidth="600.0" visible="false">
+         <children>
+            <TextField fx:id="tfUser" AnchorPane.leftAnchor="55.0" AnchorPane.topAnchor="10.0" />
+            <TextField fx:id="tfGame" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="10.0" />
+            <Button fx:id="btnSearch" mnemonicParsing="false" onAction="#DoSearch" text="Search" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+            <Button fx:id="btnRequest" mnemonicParsing="false" onAction="#RequestAction" text="Request" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Button>
+            <ListView fx:id="lvGames" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" />
+            <Label text="Game" AnchorPane.rightAnchor="225.0" AnchorPane.topAnchor="13.0" />
+            <Label text="User ID" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="13.0" />
+         </children></AnchorPane>
+      <AnchorPane fx:id="paneShowRequests" prefHeight="400.0" prefWidth="600.0" visible="false">
+         <children>
+            <TableView fx:id="tvRequests" prefHeight="350.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <columns>
+                <TableColumn fx:id="tcRequester" editable="false" prefWidth="105.0" text="Requested By" />
+                <TableColumn fx:id="tcGame" editable="false" prefWidth="389.0" text="Game" />
+                 <TableColumn fx:id="tcDate" editable="false" prefWidth="105.0" text="Date Requested" />
+              </columns>
+            </TableView>
+            <Button fx:id="btnFillRequest" mnemonicParsing="false" onAction="#FillRequest" text="Fill Request" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
+               <font>
+                  <Font size="18.0" />
+               </font></Button>
+            <Label text="User ID" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="10.0" />
+            <TextField fx:id="tfFillUser" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="52.0" />
+         </children></AnchorPane>
+   </children>
+</AnchorPane>
