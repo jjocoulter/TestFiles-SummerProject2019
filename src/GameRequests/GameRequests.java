@@ -1,5 +1,7 @@
 package GameRequests;
 
+import Supporting.BCrypt;
+import Supporting.Methods;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,17 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.*;
 
@@ -51,6 +43,7 @@ public class GameRequests extends Application{
     private ObservableList<String> results = FXCollections.observableArrayList();
     private String selectedGame;
     private ObservableList data = FXCollections.observableArrayList();
+    private Methods methods = new Methods();
 
     public void start(Stage primaryStage) throws Exception {
 
@@ -98,54 +91,15 @@ public class GameRequests extends Application{
             }
             tvRequests.setItems(data);
         }
-
-
-
     }
 
     public void DoSearch(ActionEvent actionEvent) throws Exception {
-        HttpPost post = new HttpPost("https://api-v3.igdb.com/games/");
-        post.setHeader("user-key", "ba566df70dd39c35dc2edeea0cbd7838");
-        post.setEntity(new StringEntity("search \"" + tfGame.getText() + "\"; fields name, id; limit 30;"));
-
-        HttpClient client = HttpClientBuilder.create().build();
-
-        HttpResponse response = client.execute(post);
-
-
-        InputStream ips  = response.getEntity().getContent();
-        BufferedReader buf = new BufferedReader(new InputStreamReader(ips,"UTF-8"));
-        if(response.getStatusLine().getStatusCode()!= HttpStatus.SC_OK)
-        {
-            throw new Exception(response.getStatusLine().getReasonPhrase());
-        }
 
         results.clear();
         games.clear();
-        String s;
-        String id = "";
-        while(true) {
 
-            s = buf.readLine();
-            System.out.println(s);
-            if(s==null || s.length()==0)
-                break;
-            if (s.contains("name")){
-                String[] parts = s.split(":", 2);
-                String name = parts[1];
-                name = name.substring(2);
-                name = name.substring(0, (name.length() - 1));
-                games.put(name, id);
-            } else if (s.contains("id")){
-                String[] parts = s.split(":");
-                parts[1] = parts[1].replaceAll("\\s", "");
-                parts[1] = parts[1].replaceAll(",", "");
-                id = parts[1];
-            }
-        }
-        buf.close();
-        ips.close();
-        System.out.println(games.toString());
+        games = methods.findGames("games", "search \"" + tfGame.getText() +
+                "\"; fields name, id; limit 30;");
 
         results.addAll(games.keySet());
 
@@ -169,13 +123,30 @@ public class GameRequests extends Application{
 
                 Statement stmt = con.createStatement()
         ) {
-            String getUser = tfUser.getText();
-            String getGame = games.get(selectedGame);
-            stmt.executeUpdate("INSERT INTO Requests(Requester, Game, Date) " + "VALUES ('" + getUser + "', '" +
-                    getGame + "', CURDATE())");
+            String strSelect = "SELECT * FROM Users WHERE ID = \"" + tfUser.getText() + "\"";
+            ResultSet result = stmt.executeQuery(strSelect);
+
+            if (!result.next()){
+                alertWarning("Invalid", "There is no ID match in the database.");
+            } else {
+                String getUser = tfUser.getText();
+                String getGame = games.get(selectedGame);
+                stmt.executeUpdate("INSERT INTO Requests(Requester, Game, Date) " + "VALUES ('" + getUser + "', '"
+                        + getGame + "', CURDATE())");
+            }
         }
     }
 
     public void FillRequest(ActionEvent actionEvent) {
+    }
+
+    public void alertWarning(String header, String content){
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Error");
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        ButtonType okButton = new ButtonType("OK");
+        alert.getButtonTypes().setAll(okButton);
+        alert.showAndWait();
     }
 }

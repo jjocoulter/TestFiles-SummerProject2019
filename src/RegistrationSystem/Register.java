@@ -1,5 +1,6 @@
 package RegistrationSystem;
 
+import Supporting.BCrypt;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
