@@ -1,6 +1,5 @@
 package GameRequests;
 
-import Supporting.BCrypt;
 import Supporting.Methods;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -14,9 +13,12 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 /**
  * Created by u0861925 on 21/07/2019.
@@ -32,17 +34,18 @@ public class GameRequests extends Application{
     public Button btnSearch;
     public Button btnRequest;
     public ListView lvGames;
-    public TableView tvRequests;
+    public TableView<Request> tvRequests;
     public Button btnFillRequest;
     public TextField tfFillUser;
     public TableColumn tcRequester;
     public TableColumn tcGame;
     public TableColumn tcDate;
+    public TableColumn tcRequestID;
 
     private HashMap<String, String> games = new HashMap();
     private ObservableList<String> results = FXCollections.observableArrayList();
     private String selectedGame;
-    private ObservableList data = FXCollections.observableArrayList();
+    private ObservableList<Request> data = FXCollections.observableArrayList();
     private Methods methods = new Methods();
 
     public void start(Stage primaryStage) throws Exception {
@@ -72,22 +75,27 @@ public class GameRequests extends Application{
         paneShowRequests.setVisible(true);
         paneMakeRequest.setVisible(false);
 
+        tcRequestID.setCellValueFactory(new PropertyValueFactory<Request, Integer>("requestID"));
+        tcRequester.setCellValueFactory(new PropertyValueFactory<Request, Integer>("requester"));
+        tcGame.setCellValueFactory(new PropertyValueFactory<Request, Integer>("game"));
+        tcDate.setCellValueFactory(new PropertyValueFactory<Request, Date>("date"));
+
         try (
                 Connection con = DriverManager.getConnection("jdbc:mysql://selene.hud.ac.uk:3306/u0861925",
                         "u0861925", "02jan90");
 
                 Statement stmt = con.createStatement()
         ) {
-            ResultSet rset = stmt.executeQuery("SELECT Requester, Game, Date FROM Requests");
+            ResultSet rset = stmt.executeQuery("SELECT RequestID, Requester, Game, Date FROM Requests");
 
             while (rset.next()) {
-                ObservableList<String> row = FXCollections.observableArrayList();
-                for(int i=1 ; i<=rset.getMetaData().getColumnCount(); i++) {
-                    row.add(rset.getString(i));
-                }
-                data.add(row);
-                System.out.println(data.toString());
+                Request request = new Request();
+                request.setRequestID(rset.getInt("RequestID"));
+                request.setRequester(rset.getInt("Requester"));
+                request.setGame(methods.getTitle(rset.getInt("Game")));
+                request.setDate(rset.getDate("Date"));
 
+                data.add(request);
             }
             tvRequests.setItems(data);
         }
@@ -137,10 +145,32 @@ public class GameRequests extends Application{
         }
     }
 
-    public void FillRequest(ActionEvent actionEvent) {
+    public void FillRequest(ActionEvent actionEvent) throws SQLException{
+        Request request = tvRequests.getSelectionModel().getSelectedItem();
+        System.out.println(request.getRequestID().toString());
+
+        try (
+                Connection con = DriverManager.getConnection("jdbc:mysql://selene.hud.ac.uk:3306/u0861925",
+                        "u0861925", "02jan90");
+
+                Statement stmt = con.createStatement()
+
+        ) {
+            String strSelect = "SELECT * FROM Users WHERE ID = \"" + tfFillUser.getText() + "\"";
+            ResultSet result = stmt.executeQuery(strSelect);
+
+            if (!result.next()){
+                alertWarning("Invalid", "There is no ID match in the database.");
+            } else {
+                stmt.executeUpdate("UPDATE Requests SET FillUser=\"" + tfFillUser.getText() +
+                        "\", FillDate=CURDATE() WHERE RequestID=" + request.getRequestID() + ";");
+            }
+
+        }
+
     }
 
-    public void alertWarning(String header, String content){
+    private void alertWarning(String header, String content){
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Error");
         alert.setHeaderText(header);

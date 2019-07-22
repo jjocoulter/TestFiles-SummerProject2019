@@ -66,4 +66,34 @@ public class Methods {
 
         return games;
     }
+
+    public String getTitle(int gameID) throws Exception{
+        String name = null;
+        HttpResponse response = searchDatabase("games", "fields name; where id=" + gameID + ";");
+
+        InputStream ips  = response.getEntity().getContent();
+        BufferedReader buf = new BufferedReader(new InputStreamReader(ips,"UTF-8"));
+        if(response.getStatusLine().getStatusCode()!= HttpStatus.SC_OK)
+        {
+            throw new Exception(response.getStatusLine().getReasonPhrase());
+        }
+
+        String s;
+        while(true) {
+
+            s = buf.readLine();
+            if(s==null || s.length()==0)
+                break;
+            if (s.contains("name")){
+                String[] parts = s.split(":", 2);
+                name = parts[1];
+                name = name.substring(2);
+                name = name.substring(0, (name.length() - 1));
+            }
+        }
+        buf.close();
+        ips.close();
+
+        return name;
+    }
 }

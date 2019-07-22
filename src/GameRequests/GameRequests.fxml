@@ -42,9 +42,10 @@
          <children>
             <TableView fx:id="tvRequests" prefHeight="350.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <columns>
-                <TableColumn fx:id="tcRequester" editable="false" prefWidth="105.0" text="Requested By" />
-                <TableColumn fx:id="tcGame" editable="false" prefWidth="389.0" text="Game" />
-                 <TableColumn fx:id="tcDate" editable="false" prefWidth="105.0" text="Date Requested" />
+                 <TableColumn fx:id="tcRequestID" editable="false" prefWidth="81.0" text="Request ID" />
+                <TableColumn fx:id="tcRequester" editable="false" prefWidth="90.0" text="Requested By" />
+                <TableColumn fx:id="tcGame" editable="false" prefWidth="322.0" text="Game" />
+                 <TableColumn fx:id="tcDate" editable="false" prefWidth="106.0" text="Date Requested" />
               </columns>
             </TableView>
             <Button fx:id="btnFillRequest" mnemonicParsing="false" onAction="#FillRequest" text="Fill Request" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
