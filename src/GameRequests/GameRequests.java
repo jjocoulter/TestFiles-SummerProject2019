@@ -86,16 +86,18 @@ public class GameRequests extends Application{
 
                 Statement stmt = con.createStatement()
         ) {
-            ResultSet rset = stmt.executeQuery("SELECT RequestID, Requester, Game, Date FROM Requests");
+            ResultSet rset = stmt.executeQuery("SELECT RequestID, Requester, Game, Date, FillUser FROM Requests");
 
             while (rset.next()) {
-                Request request = new Request();
-                request.setRequestID(rset.getInt("RequestID"));
-                request.setRequester(rset.getInt("Requester"));
-                request.setGame(methods.getTitle(rset.getInt("Game")));
-                request.setDate(rset.getDate("Date"));
+                if (rset.getObject("FillUser") == null) {
+                    Request request = new Request();
+                    request.setRequestID(rset.getInt("RequestID"));
+                    request.setRequester(rset.getInt("Requester"));
+                    request.setGame(methods.getTitle(rset.getInt("Game")));
+                    request.setDate(rset.getDate("Date"));
 
-                data.add(request);
+                    data.add(request);
+                }
             }
             tvRequests.setItems(data);
         }
@@ -164,6 +166,7 @@ public class GameRequests extends Application{
             } else {
                 stmt.executeUpdate("UPDATE Requests SET FillUser=\"" + tfFillUser.getText() +
                         "\", FillDate=CURDATE() WHERE RequestID=" + request.getRequestID() + ";");
+                tvRequests.getItems().remove(request);
             }
 
         }
