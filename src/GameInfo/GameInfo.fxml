@@ -59,7 +59,7 @@
                   <Font name="System Bold" size="44.0" />
                </font>
             </Label>
-            <Label fx:id="lblSummary" maxWidth="410.0" text="Label" AnchorPane.leftAnchor="180.0" AnchorPane.topAnchor="100.0" />
+            <Label fx:id="lblSummary" maxWidth="410.0" text="Label" wrapText="true" AnchorPane.leftAnchor="180.0" AnchorPane.topAnchor="100.0" />
          </children></AnchorPane>
    </children>
 </AnchorPane>

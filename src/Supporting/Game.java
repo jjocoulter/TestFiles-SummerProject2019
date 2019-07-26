@@ -1,6 +1,5 @@
 package Supporting;
 
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -8,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Created by u0861925 on 26/07/2019.
  */
 public class Game {
-    public final String name;
-    public final String id;
+    private final String name;
+    private final String id;
 
     @JsonCreator
     public Game(@JsonProperty("name") String name,

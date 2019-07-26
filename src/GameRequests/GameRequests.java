@@ -6,17 +6,14 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
@@ -24,7 +21,7 @@ import java.util.Date;
 /**
  * Created by u0861925 on 21/07/2019.
  */
-public class GameRequests extends Application{
+public class GameRequests extends Application {
     public AnchorPane paneInitial;
     public Button btnMakeRequest;
     public Button btnShowRequests;
@@ -34,19 +31,19 @@ public class GameRequests extends Application{
     public TextField tfGame;
     public Button btnSearch;
     public Button btnRequest;
-    public ListView lvGames;
+    public ListView<String> lvGames;
     public TableView<Request> tvRequests;
     public Button btnFillRequest;
     public TextField tfFillUser;
-    public TableColumn tcRequester;
-    public TableColumn tcGame;
-    public TableColumn tcDate;
-    public TableColumn tcRequestID;
+    public TableColumn<Request, Integer> tcRequester;
+    public TableColumn<Request, Integer> tcGame;
+    public TableColumn<Request, Date> tcDate;
+    public TableColumn<Request, Integer> tcRequestID;
 
     private int selectedGame;
     private ObservableList<Request> data = FXCollections.observableArrayList();
     private Methods methods = new Methods();
-    private ObservableList<Game> games;
+    private List<Game> games;
 
     public void start(Stage primaryStage) throws Exception {
 
@@ -75,10 +72,10 @@ public class GameRequests extends Application{
         paneShowRequests.setVisible(true);
         paneMakeRequest.setVisible(false);
 
-        tcRequestID.setCellValueFactory(new PropertyValueFactory<Request, Integer>("requestID"));
-        tcRequester.setCellValueFactory(new PropertyValueFactory<Request, Integer>("requester"));
-        tcGame.setCellValueFactory(new PropertyValueFactory<Request, Integer>("game"));
-        tcDate.setCellValueFactory(new PropertyValueFactory<Request, Date>("date"));
+        tcRequestID.setCellValueFactory(new PropertyValueFactory<>("requestID"));
+        tcRequester.setCellValueFactory(new PropertyValueFactory<>("requester"));
+        tcGame.setCellValueFactory(new PropertyValueFactory<>("game"));
+        tcDate.setCellValueFactory(new PropertyValueFactory<>("date"));
 
         try (
                 Connection con = DriverManager.getConnection("jdbc:mysql://selene.hud.ac.uk:3306/u0861925",
@@ -105,11 +102,11 @@ public class GameRequests extends Application{
 
     public void DoSearch(ActionEvent actionEvent) throws Exception {
 
-        games = FXCollections.observableArrayList(methods.findGames("games",
-                "search \"" + tfGame.getText() + "\"; fields name, id; limit 30;"));
+        games = methods.findGames("games",
+                "search \"" + tfGame.getText() + "\"; fields name, id; limit 30;");
 
         ObservableList<String> gameList = FXCollections.observableArrayList();
-        for (Game g : games){
+        for (Game g : games) {
             gameList.add(g.getName());
         }
 
@@ -117,12 +114,9 @@ public class GameRequests extends Application{
         lvGames.getSelectionModel().select(0);
         lvGames.getFocusModel().focus(0);
 
-        lvGames.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                selectedGame = lvGames.getSelectionModel().getSelectedIndex();
-                System.out.println(selectedGame);
-            }
+        lvGames.setOnMouseClicked(event -> {
+            selectedGame = lvGames.getSelectionModel().getSelectedIndex();
+            System.out.println(selectedGame);
         });
     }
 
@@ -136,8 +130,8 @@ public class GameRequests extends Application{
             String strSelect = "SELECT * FROM Users WHERE ID = \"" + tfUser.getText() + "\"";
             ResultSet result = stmt.executeQuery(strSelect);
 
-            if (!result.next()){
-                alertWarning("Invalid", "There is no ID match in the database.");
+            if (!result.next()) {
+                alertWarning();
             } else {
                 String getUser = tfUser.getText();
                 String getGame = games.get(selectedGame).getId();
@@ -148,7 +142,7 @@ public class GameRequests extends Application{
         }
     }
 
-    public void FillRequest(ActionEvent actionEvent) throws SQLException{
+    public void FillRequest(ActionEvent actionEvent) throws SQLException {
         Request request = tvRequests.getSelectionModel().getSelectedItem();
         System.out.println(request.getRequestID().toString());
 
@@ -162,8 +156,8 @@ public class GameRequests extends Application{
             String strSelect = "SELECT * FROM Users WHERE ID = \"" + tfFillUser.getText() + "\"";
             ResultSet result = stmt.executeQuery(strSelect);
 
-            if (!result.next()){
-                alertWarning("Invalid", "There is no ID match in the database.");
+            if (!result.next()) {
+                alertWarning();
             } else {
                 stmt.executeUpdate("UPDATE Requests SET FillUser=\"" + tfFillUser.getText() +
                         "\", FillDate=CURDATE() WHERE RequestID=" + request.getRequestID() + ";");
@@ -174,11 +168,11 @@ public class GameRequests extends Application{
 
     }
 
-    private void alertWarning(String header, String content){
+    private void alertWarning() {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Error");
-        alert.setHeaderText(header);
-        alert.setContentText(content);
+        alert.setHeaderText("Invalid");
+        alert.setContentText("There is no ID match in the database.");
         ButtonType okButton = new ButtonType("OK");
         alert.getButtonTypes().setAll(okButton);
         alert.showAndWait();
