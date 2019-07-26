@@ -1,5 +1,6 @@
 package GameInfo;
 
+import Supporting.Game;
 import Supporting.Methods;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -20,13 +21,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.*;
-import java.util.HashMap;
 
 /**
  * Created by u0861925 on 08/07/2019.
@@ -43,10 +39,9 @@ public class GameInfo extends Application {
     public Label lblTitle;
     public Label lblSummary;
 
-    private HashMap<String, String> games = new HashMap();
-    private ObservableList<String> results = FXCollections.observableArrayList();
-    private String selectedGame;
+    private int selectedGame;
     private Methods methods = new Methods();
+    ObservableList<Game> games;
 
     public void start(Stage primaryStage) throws Exception {
 
@@ -68,20 +63,25 @@ public class GameInfo extends Application {
     public void doSearch(ActionEvent actionEvent) throws Exception {
         paneGInfo.setVisible(false);
         paneResults.setVisible(true);
-        results.clear();
-        games.clear();
-        games = methods.findGames("games", "search \"" + tfSearch.getText() +
-                "\"; fields name, id; limit 30;");
-        results.addAll(games.keySet());
 
-        lvResults.setItems(results);
+//        games.clear();
+
+        games = FXCollections.observableArrayList(methods.findGames("games",
+                "search \"" + tfSearch.getText() + "\"; fields name, id; limit 30;"));
+
+        ObservableList<String> gameList = FXCollections.observableArrayList();
+        for (Game g : games){
+            gameList.add(g.getName());
+        }
+
+        lvResults.setItems(gameList);
         lvResults.getSelectionModel().select(0);
         lvResults.getFocusModel().focus(0);
 
         lvResults.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                selectedGame = String.valueOf(lvResults.getSelectionModel().getSelectedItem());
+                selectedGame = lvResults.getSelectionModel().getSelectedIndex();
                 System.out.println(selectedGame);
             }
         });
@@ -90,7 +90,7 @@ public class GameInfo extends Application {
 
 
     public void doResultSelect(ActionEvent actionEvent) throws Exception {
-        String selectedID = games.get(selectedGame);
+        String selectedID = games.get(selectedGame).getId();
         System.out.println(selectedID);
         paneResults.setVisible(false);
         paneGInfo.setVisible(true);

@@ -1,5 +1,7 @@
 package Supporting;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -12,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by u0861925 on 22/07/2019.
@@ -19,7 +23,6 @@ import java.util.HashMap;
 public class Methods {
 
     private HttpClient client = HttpClientBuilder.create().build();
-    private HashMap<String, String> games = new HashMap();
 
     public HttpResponse searchDatabase(String endpoint, String query) throws IOException {
         HttpPost post = new HttpPost("https://api-v3.igdb.com/" + endpoint + "/");
@@ -29,7 +32,7 @@ public class Methods {
         return client.execute(post);
     }
 
-    public HashMap<String, String> findGames(String endpoint, String query) throws Exception{
+    public List<Game> findGames(String endpoint, String query) throws Exception{
         HttpResponse response = searchDatabase(endpoint, query);
 
         InputStream ips  = response.getEntity().getContent();
@@ -39,27 +42,21 @@ public class Methods {
             throw new Exception(response.getStatusLine().getReasonPhrase());
         }
 
+        StringBuilder sb = new StringBuilder();
         String s;
-        String id = "";
-        while(true) {
-
+        while(true )
+        {
             s = buf.readLine();
-            System.out.println(s);
             if(s==null || s.length()==0)
                 break;
-            if (s.contains("id")){
-                String[] parts = s.split(":");
-                parts[1] = parts[1].replaceAll("\\s", "");
-                parts[1] = parts[1].replaceAll(",", "");
-                id = parts[1];
-            } else if (s.contains("name")){
-                String[] parts = s.split(":", 2);
-                String name = parts[1];
-                name = name.substring(2);
-                name = name.substring(0, (name.length() - 1));
-                games.put(name, id);
-            }
+            sb.append(s);
+            sb.append("\n");
         }
+
+        String jsonText = sb.toString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<Game> games = mapper.readValue(jsonText, new TypeReference<List<Game>>(){});
         buf.close();
         ips.close();
         System.out.println(games.toString());

@@ -1,5 +1,6 @@
 package GameRequests;
 
+import Supporting.Game;
 import Supporting.Methods;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -42,11 +43,10 @@ public class GameRequests extends Application{
     public TableColumn tcDate;
     public TableColumn tcRequestID;
 
-    private HashMap<String, String> games = new HashMap();
-    private ObservableList<String> results = FXCollections.observableArrayList();
-    private String selectedGame;
+    private int selectedGame;
     private ObservableList<Request> data = FXCollections.observableArrayList();
     private Methods methods = new Methods();
+    private ObservableList<Game> games;
 
     public void start(Stage primaryStage) throws Exception {
 
@@ -104,22 +104,23 @@ public class GameRequests extends Application{
     }
 
     public void DoSearch(ActionEvent actionEvent) throws Exception {
-        results.clear();
-        games.clear();
 
-        games = methods.findGames("games", "search \"" + tfGame.getText() +
-                "\"; fields name, id; limit 30;");
+        games = FXCollections.observableArrayList(methods.findGames("games",
+                "search \"" + tfGame.getText() + "\"; fields name, id; limit 30;"));
 
-        results.addAll(games.keySet());
+        ObservableList<String> gameList = FXCollections.observableArrayList();
+        for (Game g : games){
+            gameList.add(g.getName());
+        }
 
-        lvGames.setItems(results);
+        lvGames.setItems(gameList);
         lvGames.getSelectionModel().select(0);
         lvGames.getFocusModel().focus(0);
 
         lvGames.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                selectedGame = String.valueOf(lvGames.getSelectionModel().getSelectedItem());
+                selectedGame = lvGames.getSelectionModel().getSelectedIndex();
                 System.out.println(selectedGame);
             }
         });
@@ -139,7 +140,8 @@ public class GameRequests extends Application{
                 alertWarning("Invalid", "There is no ID match in the database.");
             } else {
                 String getUser = tfUser.getText();
-                String getGame = games.get(selectedGame);
+                String getGame = games.get(selectedGame).getId();
+                System.out.println(getGame);
                 stmt.executeUpdate("INSERT INTO Requests(Requester, Game, Date) " + "VALUES ('" + getUser + "', '"
                         + getGame + "', CURDATE())");
             }
