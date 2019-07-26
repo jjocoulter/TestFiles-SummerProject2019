@@ -104,7 +104,6 @@ public class GameRequests extends Application{
     }
 
     public void DoSearch(ActionEvent actionEvent) throws Exception {
-
         results.clear();
         games.clear();
 

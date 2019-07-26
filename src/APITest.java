@@ -1,3 +1,5 @@
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -8,6 +10,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -22,7 +26,7 @@ public class APITest {
 
         post.setHeader("user-key", "ba566df70dd39c35dc2edeea0cbd7838");
         //the search queries
-        post.setEntity(new StringEntity("fields *; where id = 1942;"));
+        post.setEntity(new StringEntity("fields name, platforms, rating, genres; where id = 1942;"));
 
         //get the response and check the response code. 200 is a successful response.
         HttpResponse response = client.execute(post);
@@ -36,6 +40,7 @@ public class APITest {
         {
             throw new Exception(response.getStatusLine().getReasonPhrase());
         }
+
         StringBuilder sb = new StringBuilder();
         String s;
         //loop through the response until it is empty and build a string.
@@ -52,12 +57,23 @@ public class APITest {
             }
             sb.append(s);
             sb.append("\n");
-
         }
+
+        //JSON test
+        String jsonText = sb.toString();
+        ObjectMapper mapper = new ObjectMapper();
+        List<Map<String, Object>> data =
+                mapper.readValue(jsonText , new TypeReference<List<Map<String, Object>>>(){});
+
         buf.close();
         ips.close();
-        System.out.println(sb.toString());
+//        System.out.println(sb.toString());
+        System.out.println(jsonText);
+        System.out.println(data.toString());
 
+        for (int i = 0; i < data.size(); i++){
+            System.out.println(data.get(i).get("name"));
+        }
 
 
     }
