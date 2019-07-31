@@ -1,7 +1,9 @@
 package GameRequests;
 
+import Supporting.Database;
 import Supporting.Game;
 import Supporting.Methods;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,6 +16,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
@@ -77,9 +82,14 @@ public class GameRequests extends Application {
         tcGame.setCellValueFactory(new PropertyValueFactory<>("game"));
         tcDate.setCellValueFactory(new PropertyValueFactory<>("date"));
 
+        Database database;
+        ObjectMapper mapper = new ObjectMapper();
+        try(InputStream fileStream = new FileInputStream("src\\database.json")) {
+            database = mapper.readValue(fileStream, Database.class);
+        }
         try (
-                Connection con = DriverManager.getConnection("jdbc:mysql://selene.hud.ac.uk:3306/u0861925",
-                        "u0861925", "02jan90");
+                Connection con = DriverManager.getConnection("jdbc:mysql://" + database.url,
+                        database.username, database.password);
 
                 Statement stmt = con.createStatement()
         ) {
@@ -120,10 +130,15 @@ public class GameRequests extends Application {
         });
     }
 
-    public void RequestAction(ActionEvent actionEvent) throws SQLException {
+    public void RequestAction(ActionEvent actionEvent) throws SQLException, IOException {
+        Database database;
+        ObjectMapper mapper = new ObjectMapper();
+        try(InputStream fileStream = new FileInputStream("src\\database.json")) {
+            database = mapper.readValue(fileStream, Database.class);
+        }
         try (
-                Connection con = DriverManager.getConnection("jdbc:mysql://selene.hud.ac.uk:3306/u0861925",
-                        "u0861925", "02jan90");
+                Connection con = DriverManager.getConnection("jdbc:mysql://" + database.url,
+                        database.username, database.password);
 
                 Statement stmt = con.createStatement()
         ) {
@@ -142,13 +157,18 @@ public class GameRequests extends Application {
         }
     }
 
-    public void FillRequest(ActionEvent actionEvent) throws SQLException {
+    public void FillRequest(ActionEvent actionEvent) throws SQLException, IOException {
         Request request = tvRequests.getSelectionModel().getSelectedItem();
         System.out.println(request.getRequestID().toString());
 
+        Database database;
+        ObjectMapper mapper = new ObjectMapper();
+        try(InputStream fileStream = new FileInputStream("src\\database.json")) {
+            database = mapper.readValue(fileStream, Database.class);
+        }
         try (
-                Connection con = DriverManager.getConnection("jdbc:mysql://selene.hud.ac.uk:3306/u0861925",
-                        "u0861925", "02jan90");
+                Connection con = DriverManager.getConnection("jdbc:mysql://" + database.url,
+                        database.username, database.password);
 
                 Statement stmt = con.createStatement()
 

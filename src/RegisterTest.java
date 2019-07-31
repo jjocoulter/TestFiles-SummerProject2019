@@ -1,3 +1,5 @@
+import Supporting.Database;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -7,9 +9,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 
-import static javafx.application.Application.launch;
 
 /**
  * Created by u0861925 on 02/07/2019.
@@ -36,10 +40,15 @@ public class RegisterTest extends Application {
 
     }
 
-    public void doRegister(ActionEvent actionEvent) {
+    public void doRegister(ActionEvent actionEvent) throws IOException {
+        Database database;
+        ObjectMapper mapper = new ObjectMapper();
+        try(InputStream fileStream = new FileInputStream("src\\database.json")) {
+            database = mapper.readValue(fileStream, Database.class);
+        }
         try (
-                Connection con = DriverManager.getConnection("jdbc:mysql://selene.hud.ac.uk:3306/u0861925",
-                        "u0861925", "02jan90");
+                Connection con = DriverManager.getConnection("jdbc:mysql://" + database.url,
+                        database.username, database.password);
 
                 Statement stmt = con.createStatement()
         ) {

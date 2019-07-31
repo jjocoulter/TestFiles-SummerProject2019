@@ -1,6 +1,8 @@
 package RegistrationSystem;
 
 import Supporting.BCrypt;
+import Supporting.Database;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -8,7 +10,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -41,11 +45,16 @@ public class Register extends Application {
 
     }
 
-    public void Register(ActionEvent actionEvent) throws SQLException {
+    public void Register(ActionEvent actionEvent) throws SQLException, IOException {
         if (VerifyInformation()){
+            Database database;
+            ObjectMapper mapper = new ObjectMapper();
+            try(InputStream fileStream = new FileInputStream("src\\database.json")) {
+                database = mapper.readValue(fileStream, Database.class);
+            }
             try (
-                    Connection con = DriverManager.getConnection("jdbc:mysql://selene.hud.ac.uk:3306/u0861925",
-                            "u0861925", "02jan90");
+                    Connection con = DriverManager.getConnection("jdbc:mysql://" + database.url,
+                            database.username, database.password);
 
                     Statement stmt = con.createStatement()
             ) {

@@ -1,3 +1,9 @@
+import Supporting.Database;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 
 /**
@@ -5,13 +11,20 @@ import java.sql.*;
  */
 public class UserTest {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException{
+        Database database;
+        ObjectMapper mapper = new ObjectMapper();
+        try(InputStream fileStream = new FileInputStream("src\\database.json")) {
+            database = mapper.readValue(fileStream, Database.class);
+        }
         try (
-                Connection con = DriverManager.getConnection("jdbc:mysql://selene.hud.ac.uk:3306/u0861925", "u0861925", "02jan90");
+                Connection con = DriverManager.getConnection("jdbc:mysql://" + database.url,
+                        database.username, database.password);
 
                 Statement stmt = con.createStatement()
         ) {
-            stmt.executeUpdate("INSERT INTO TEST_users(name, nick, email) " + "VALUES ('Josh Coulter', 'Josh', 'joshcoulteruk@gmail.com')");
+            stmt.executeUpdate("INSERT INTO TEST_users(name, nick, email) " + "VALUES ('Josh Coulter', 'Josh', " +
+                    "'joshcoulteruk@gmail.com')");
             String strSelect = "select id, name, nick, email from TEST_users";
             System.out.println("The SQL statement is: " + strSelect + "\n");
 
